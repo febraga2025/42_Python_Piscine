@@ -25,7 +25,7 @@ class CreatureCard(Card):
         info = super().get_card_info()
         info.update({
             "type": "Creature",
-            "attack": self.attack, 
+            "attack": self.attack,
             "health": self.health
         })
         return info

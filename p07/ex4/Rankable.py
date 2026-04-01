@@ -1,12 +1,19 @@
 from abc import ABC, abstractmethod
 
+
 class Rankable(ABC):
     @abstractmethod
-    def update_rating(self, opponent_rating: int, won: bool) -> int:
-        """Calcula e atualiza a pontuação (ELO) da carta."""
+    def calculate_rating(self) -> int:
+        pass
+
+    @abstractmethod
+    def update_wins(self, wins: int) -> None:
+        pass
+
+    @abstractmethod
+    def update_losses(self, losses: int) -> None:
         pass
 
     @abstractmethod
     def get_rank_info(self) -> dict:
-        """Retorna as estatísticas de ranking (Rating e Record)."""
         pass

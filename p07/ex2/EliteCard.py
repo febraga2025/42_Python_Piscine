@@ -1,13 +1,13 @@
 from ex0.Card import Card, CardRarity
-from ex1.SpellCard import SpellEffect # Importamos o Enum de efeitos do Ex 1
 from ex2.Combatable import Combatable
 from ex2.Magical import Magical
 
+
 class EliteCard(Card, Combatable, Magical):
-    def __init__(self, name: str, cost: int, rarity: CardRarity, 
+    def __init__(self, name: str, cost: int, rarity: CardRarity,
                  attack: int, mana_pool: int):
         super().__init__(name, cost, rarity)
-        
+
         self.attack_power = attack
         self.mana = mana_pool
         self.health = 10
@@ -23,7 +23,7 @@ class EliteCard(Card, Combatable, Magical):
     def defend(self, incoming_damage: int) -> dict:
         if not isinstance(incoming_damage, int) or incoming_damage < 0:
             raise ValueError("Damage must be a non-negative integer")
-        
+
         damage_blocked = 3
         actual_damage = max(0, incoming_damage - damage_blocked)
         self.health -= actual_damage

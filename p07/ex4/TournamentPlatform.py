@@ -1,39 +1,57 @@
+from typing import Dict, List, Any
+from ex4.TournamentCard import TournamentCard
+
+
 class TournamentPlatform:
-    def __init__(self):
-        self.registry = {} # Guarda as cartas por ID
-        self.matches_played = 0
+    def __init__(self) -> None:
+        self.registry: Dict[str, TournamentCard] = {}
+        self.matches_played: int = 0
 
-    def register_card(self, card):
+    def register_card(self, card: TournamentCard) -> str:
         self.registry[card.card_id] = card
+        return card.card_id
 
-    def run_match(self, player1_id: str, player2_id: str) -> dict:
-        p1 = self.registry[player1_id]
-        p2 = self.registry[player2_id]
-        
-        # Lógica de vitória: quem tem mais ataque ganha (simples para o exemplo)
+    def create_match(self, card1_id: str, card2_id: str) -> Dict[str, Any]:
+        p1 = self.registry[card1_id]
+        p2 = self.registry[card2_id]
+
         p1_wins = p1.attack_power >= p2.attack_power
-        
-        # Armazena ratings antigos para o cálculo
-        r1, r2 = p1.rating, p2.rating
-        
-        # Atualiza ambos os ratings
-        p1.update_rating(r2, p1_wins)
-        p2.update_rating(r1, not p1_wins)
-        
+
+        if p1_wins:
+            p1.update_wins(1)
+            p2.update_losses(1)
+            winner, loser = p1, p2
+        else:
+            p2.update_wins(1)
+            p1.update_losses(1)
+            winner, loser = p2, p1
+
         self.matches_played += 1
-        
+
         return {
-            "winner": p1.card_id if p1_wins else p2.card_id,
-            "loser": p2.card_id if p1_wins else p1.card_id,
-            "winner_rating": p1.rating if p1_wins else p2.rating,
-            "loser_rating": p2.rating if p1_wins else p1.rating
+            "winner": winner.card_id,
+            "loser": loser.card_id,
+            "winner_rating": winner.calculate_rating(),
+            "loser_rating": loser.calculate_rating()
         }
 
-    def get_platform_report(self) -> dict:
-        ratings = [c.rating for c in self.registry.values()]
+    def get_leaderboard(self) -> List[str]:
+        sorted_cards = sorted(
+            self.registry.values(),
+            key=lambda c: c.calculate_rating(),
+            reverse=True
+        )
+        return [f"{c.name} - Rating: {c.calculate_rating()}"
+                f" ({c.wins}-{c.losses})"
+                for c in sorted_cards]
+
+    def generate_tournament_report(self) -> Dict[str, Any]:
+        ratings = [c.calculate_rating() for c in self.registry.values()]
+        avg = sum(ratings) // len(ratings) if ratings else 0
+
         return {
             "total_cards": len(self.registry),
             "matches_played": self.matches_played,
-            "avg_rating": sum(ratings) // len(ratings) if ratings else 0,
+            "avg_rating": avg,
             "platform_status": "active"
         }

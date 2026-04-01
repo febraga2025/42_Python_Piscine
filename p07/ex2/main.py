@@ -18,10 +18,10 @@ def main():
 
     print(f"- Card: {methods_card}")
     print(f"- Combatable: {methods_combat}")
-    print(f"- Magical: {methods_magic}")
+    print(f"- Magical: {methods_magic}\n")
 
     warrior = EliteCard("Arcane Warrior", 5, CardRarity.RARE, 5, 10)
-    print(f"\nPlaying {warrior.name} (Elite Card):")
+    print(f"Playing {warrior.name} (Elite Card):\n")
 
     print("Combat phase:")
     print(f"Attack result: {warrior.attack('Enemy')}")

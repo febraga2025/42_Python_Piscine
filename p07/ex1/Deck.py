@@ -1,6 +1,9 @@
 import random
-from typing import List, Dict
+from typing import List, Dict, Any
 from ex0.Card import Card
+from ex0.CreatureCard import CreatureCard
+from ex1.SpellCard import SpellCard
+from ex1.ArtifactCard import ArtifactCard
 
 
 class Deck:
@@ -18,24 +21,23 @@ class Deck:
             raise IndexError("The deck is empty! There's nothing to draw.")
         return self._cards.pop(0)
 
-    def get_deck_stats(self) -> Dict[str, any]:
+    def get_deck_stats(self) -> Dict[str, Any]:
         total = len(self._cards)
         if total == 0:
             return {"total_cards": 0, "creatures": 0, "spells": 0,
                     "artifacts": 0, "avg_cost": 0.0}
+
         total_mana_cost = sum(card.cost for card in self._cards)
         avg_cost = total_mana_cost / total
 
-        creatures = sum(1 for c in self._cards
-                        if c.__class__.__name__ == "CreatureCard")
-        spells = sum(1 for c in self._cards
-                     if c.__class__.__name__ == "SpellCard")
-        artifacts = sum(1 for c in self._cards
-                        if c.__class__.__name__ == "ArtifactCard")
+        creatures = sum(1 for c in self._cards if isinstance(c, CreatureCard))
+        spells = sum(1 for c in self._cards if isinstance(c, SpellCard))
+        artifacts = sum(1 for c in self._cards if isinstance(c, ArtifactCard))
 
         return {
             "total_cards": total,
             "creatures": creatures,
             "spells": spells,
             "artifacts": artifacts,
-            "avg_cost": round(avg_cost, 2)}
+            "avg_cost": round(float(avg_cost), 1)
+        }

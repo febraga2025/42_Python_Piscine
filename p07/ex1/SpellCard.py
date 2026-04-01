@@ -1,18 +1,21 @@
 from ex0.Card import Card, CardRarity
 from enum import Enum
 
+
 class SpellEffect(Enum):
     DAMAGE = "damage"
     HEAL = "heal"
     BUFF = "buff"
     DEBUFF = "debuff"
 
+
 class SpellCard(Card):
-    def __init__(self, name: str, cost: int, rarity: CardRarity, effect_type: str,
-                 effect_description: str):
+    def __init__(self, name: str, cost: int, rarity: CardRarity,
+                 effect_type: str, effect_description: str):
         super().__init__(name, cost, rarity)
-        if not isinstance(effect_type, SpellEffect):
-            raise TypeError("effect_type must be a SpellEffect Enum member")
+        valid_effects = [e.value for e in SpellEffect]
+        if effect_type not in valid_effects:
+            raise ValueError(f"effect_type must be one of {valid_effects}")
         self.effect_type = effect_type
         self.effect_description = effect_description
 

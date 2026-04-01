@@ -18,7 +18,8 @@ def main():
         print(fire_dragon.get_card_info())
 
         mana_available = 6
-        print(f"\nPlaying {fire_dragon.name} with {mana_available} mana available:")
+        print(f"\nPlaying {fire_dragon.name} with {mana_available}"
+              " mana available:")
         print(f"Playable: {fire_dragon.is_playable(mana_available)}")
         print(f"Play result: {fire_dragon.play({})}")
 

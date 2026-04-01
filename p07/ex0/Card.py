@@ -1,17 +1,19 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
+
 class CardRarity(Enum):
     COMMON = "Common"
     RARE = "Rare"
     EPIC = "Epic"
     LEGENDARY = "Legendary"
 
+
 class Card(ABC):
     def __init__(self, name: str, cost: int, rarity: CardRarity):
         if not isinstance(rarity, CardRarity):
             raise TypeError("rarity must be an instance of CardRarity Enum")
-            
+
         self.name = name
         self.cost = cost
         self.rarity = rarity
