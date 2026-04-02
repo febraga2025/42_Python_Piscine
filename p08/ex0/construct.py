@@ -1,32 +1,38 @@
-import sys
 import os
 import site
+import sys
+
+
+def get_package_location() -> str:
+    """Return the current package install location for this Python."""
+    try:
+        return site.getsitepackages()[0]
+    except Exception:
+        return os.path.join(
+            sys.prefix,
+            "lib",
+            f"python{sys.version_info.major}.{sys.version_info.minor}",
+            "site-packages",
+        )
 
 
 def detect_matrix_environment() -> None:
-    """
-    Detects the Python environment using only authorized modules: sys, os, site.
-    """
+    """Detect whether Python is running inside a virtual environment."""
     try:
-        # Detectando se estamos no Construct (Venv)
+        # Compare the active prefix with the base prefix to detect a venv.
         is_venv = sys.prefix != sys.base_prefix
         current_python = sys.executable
 
         if is_venv:
-            # --- MODO: INSIDE THE CONSTRUCT ---
             venv_path = sys.prefix
             venv_name = os.path.basename(venv_path)
 
-            # Usando o módulo 'site' que é autorizado para pegar os pacotes
-            # site.getsitepackages() retorna uma lista. Pegamos o primeiro item.
             try:
                 package_path = site.getsitepackages()[0]
             except Exception:
-                # Fallback manual usando 'os' e 'sys' caso o site falhe
-                # Isso respeita a estrutura do Python em ambientes Unix
                 package_path = os.path.join(
-                    venv_path, "lib", 
-                    f"python{sys.version_info.major}.{sys.version_info.minor}", 
+                    venv_path, "lib",
+                    f"python{sys.version_info.major}.{sys.version_info.minor}",
                     "site-packages"
                 )
 
@@ -41,26 +47,20 @@ def detect_matrix_environment() -> None:
             print(package_path)
 
         else:
-            # --- MODO: OUTSIDE THE MATRIX ---
             print("MATRIX STATUS: You're still plugged in")
             print(f"Current Python: {current_python}")
             print("Virtual Environment: None detected")
             print("\nWARNING: You're in the global environment!")
             print("The machines can see everything you install.")
             print("\nTo enter the construct, run:")
-            
-            # Detectando SO com 'os.name' (também autorizado)
-            if os.name == 'nt':  # Windows
-                print("python -m venv matrix_env")
-                print("matrix_env\\Scripts\\activate")
-            else:  # Unix (Linux/Mac)
-                print("python3 -m venv matrix_env")
-                print("source matrix_env/bin/activate")
-            
+
+            print("python -m venv matrix_env")
+            print("source matrix_env/bin/activate # On Unix")
+            print("matrix_env\\Scripts\\activate # On Windows")
+
             print("\nThen run this program again.")
 
     except Exception as e:
-        # Handling exceptions gracefully as requested in Chapter III.1
         print(f"ERROR: A glitch occurred in the Matrix: {e}")
 
 

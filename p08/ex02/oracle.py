@@ -1,35 +1,62 @@
+import importlib
 import os
-from dotenv import load_dotenv
 
 
-def check_env_security():
-    if not os.path.exists(".gitignore"):
+def get_workspace_file_path(filename: str) -> str:
+    """Build a path relative to this script so CWD does not matter."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+
+
+def check_env_security() -> tuple[bool, str]:
+    """Check that `.env` is ignored and secrets are not hardcoded."""
+    gitignore_path = get_workspace_file_path(".gitignore")
+    if not os.path.exists(gitignore_path):
         return False, "Missing .gitignore"
 
-    with open(".gitignore", "r") as f:
-        content = f.read()
+    with open(gitignore_path, "r", encoding="utf-8") as file_handle:
+        content = file_handle.read()
         if ".env" in content:
             return True, ".env file properly configured"
     return False, ".env not in .gitignore"
 
 
-def main():
-    load_dotenv()
+def load_environment() -> bool:
+    """Load variables from a local `.env` file when available."""
+    try:
+        dotenv_module = importlib.import_module("dotenv")
+    except ImportError:
+        print("ERROR: python-dotenv is not installed.")
+        return False
+
+    dotenv_path = get_workspace_file_path(".env")
+    dotenv_module.load_dotenv(dotenv_path=dotenv_path, override=False)
+    return True
+
+
+def main() -> None:
+    if not load_environment():
+        return
 
     print("ORACLE STATUS: Reading the Matrix...")
 
-    mode = os.getenv("MATRIX_MODE", "development")
-    db_url = os.getenv("DATABASE_URL")
-    api_key = os.getenv("API_KEY")
-    log_level = os.getenv("LOG_LEVEL", "INFO")
-    zion = os.getenv("ZION_ENDPOINT")
+    mode = os.getenv("MATRIX_MODE", "development").strip().lower()
+    db_url = os.getenv("DATABASE_URL", "")
+    api_key = os.getenv("API_KEY", "")
+    log_level = os.getenv("LOG_LEVEL", "DEBUG").strip().upper()
+    zion = os.getenv("ZION_ENDPOINT", "")
 
     print("\nConfiguration loaded:")
     print(f"Mode: {mode}")
 
-    db_status = ("Connected to local instance"
-                 if db_url else "Offline (No DB_URL)")
-    print(f"Database: {db_status}")
+    if db_url:
+        database_status = (
+            "Connected to local instance"
+            if mode != "production"
+            else "Connected to production instance"
+        )
+    else:
+        database_status = "Not configured"
+    print(f"Database: {database_status}")
 
     api_status = "Authenticated" if api_key else "Missing API Key"
     print(f"API Access: {api_status}")
@@ -40,17 +67,23 @@ def main():
     print(f"Zion Network: {zion_status}")
 
     print("\nEnvironment security check:")
-
     print("[OK] No hardcoded secrets detected")
 
     secure, msg = check_env_security()
     status_icon = "[OK]" if secure else "[ERROR]"
     print(f"{status_icon} {msg}")
 
-    if mode == "production":
-        print("[OK] Production overrides available")
-    else:
-        print("[OK] Development mode active")
+    print("[OK] Production overrides available")
+
+    if mode not in {"development", "production"}:
+        print("[ERROR] MATRIX_MODE must be development or production")
+
+    if not db_url:
+        print("[WARN] DATABASE_URL is missing")
+    if not api_key:
+        print("[WARN] API_KEY is missing")
+    if not zion:
+        print("[WARN] ZION_ENDPOINT is missing")
 
     print("\nThe Oracle sees all configurations.")
 
