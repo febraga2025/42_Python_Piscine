@@ -17,7 +17,6 @@ def check_dependencies() -> dict[str, tuple[bool, str | None]]:
 
 
 def compare_installed_versions() -> dict[str, str | None]:
-    """Collect the installed package versions used in the analysis."""
     packages = ["pandas", "numpy", "matplotlib", "requests"]
     status = check_dependencies()
 
@@ -33,7 +32,6 @@ def compare_installed_versions() -> dict[str, str | None]:
 
 
 def load_matrix_data() -> None:
-    """Run the sample Matrix analysis and save a chart."""
     pandas_module = importlib.import_module("pandas")
     numpy_module = importlib.import_module("numpy")
     matplotlib_module = importlib.import_module("matplotlib")
@@ -66,7 +64,6 @@ def load_matrix_data() -> None:
 
 
 def main() -> None:
-    """Check package availability and run the loading demo."""
     print("LOADING STATUS: Loading programs...")
     print("Checking dependencies:")
 

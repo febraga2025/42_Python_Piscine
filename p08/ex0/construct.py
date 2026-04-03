@@ -4,7 +4,6 @@ import sys
 
 
 def get_package_location() -> str:
-    """Return the current package install location for this Python."""
     try:
         return site.getsitepackages()[0]
     except Exception:
@@ -17,9 +16,7 @@ def get_package_location() -> str:
 
 
 def detect_matrix_environment() -> None:
-    """Detect whether Python is running inside a virtual environment."""
     try:
-        # Compare the active prefix with the base prefix to detect a venv.
         is_venv = sys.prefix != sys.base_prefix
         current_python = sys.executable
 

@@ -3,12 +3,10 @@ import os
 
 
 def get_workspace_file_path(filename: str) -> str:
-    """Build a path relative to this script so CWD does not matter."""
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
 
 
 def check_env_security() -> tuple[bool, str]:
-    """Check that `.env` is ignored and secrets are not hardcoded."""
     gitignore_path = get_workspace_file_path(".gitignore")
     if not os.path.exists(gitignore_path):
         return False, "Missing .gitignore"
@@ -21,7 +19,6 @@ def check_env_security() -> tuple[bool, str]:
 
 
 def load_environment() -> bool:
-    """Load variables from a local `.env` file when available."""
     try:
         dotenv_module = importlib.import_module("dotenv")
     except ImportError:
