@@ -1,4 +1,5 @@
-from typing import Callable, Any
+from typing import Any
+from collections.abc import Callable
 
 
 def mage_counter() -> Callable[[], int]:
@@ -44,23 +45,34 @@ if __name__ == "__main__":
     enchantment_types = ['Shocking', 'Dark', 'Flowing']
     items_to_enchant = ['Wand', 'Ring', 'Cloak', 'Shield']
 
-    print("=== Testing Mage Counter ===")
-    counter_spell = mage_counter()
-    print(f"Call 1: {counter_spell()}")
-    print(f"Call 2: {counter_spell()}")
+    print("Testing mage counter...")
+    counter_a = mage_counter()
+    counter_b = mage_counter()
+    print(f"counter_a call 1: {counter_a()}")
+    print(f"counter_a call 2: {counter_a()}")
+    print(f"counter_b call 1: {counter_b()}")
 
-    print("\n=== Testing Spell Accumulator ===")
-    acc = spell_accumulator(initial_powers[0])
-    print(f"Initial 63 + {power_additions[0]} = {acc(power_additions[0])}")
-    print(f"Total + {power_additions[1]} = {acc(power_additions[1])}")
+    print("\nTesting spell accumulator...")
+    base = initial_powers[0]
+    acc = spell_accumulator(base)
 
-    print("\n=== Testing Enchantment Factory ===")
-    shock_factory = enchantment_factory(enchantment_types[0])
-    print(shock_factory(items_to_enchant[0]))
-    print(shock_factory(items_to_enchant[1]))
+    add1 = power_additions[0]
+    add2 = power_additions[1]
+    print(f"Base {base}, add {add1}: {acc(add1)}")
+    print(f"Base {base}, add {add2}: {acc(add2)}")
 
-    print("\n=== Testing Memory Vault ===")
-    vault = memory_vault()
-    vault["store"]("secret_spell", "Abra Kadabra")
-    print(f"Recalling secret: {vault['recall']('secret_spell')}")
-    print(f"Recalling ghost: {vault['recall']('non_existent')}")
+    print("Testing enchantment factory...")
+    factory1 = enchantment_factory(enchantment_types[0])
+    factory2 = enchantment_factory(enchantment_types[1])
+
+    print(factory1(items_to_enchant[0]))
+    print(factory2(items_to_enchant[1]))
+
+    print("Testing memory vault...")
+    v = memory_vault()
+    key = "secret"
+    val = initial_powers[2]
+    print(f"Store '{key}' = {val}")
+    v["store"](key, val)
+    print(f"Recall '{key}': {v['recall'](key)}")
+    print(f"Recall 'unknown': {v['recall']('unknown')}")

@@ -1,15 +1,23 @@
 import functools
 import operator
-from typing import Callable, Any
+from collections.abc import Callable
+from typing import Any
 
 
 def spell_reducer(spells: list[int], operation: str) -> int:
+    if not spells:
+        return 0
+
     ops = {
         "add": operator.add,
         "multiply": operator.mul,
         "max": max,
         "min": min
     }
+
+    if operation not in ops:
+        return 0
+
     return functools.reduce(ops[operation], spells)
 
 
@@ -27,50 +35,48 @@ def partial_enchanter(base_func: Callable) -> dict[str, Callable]:
 
 @functools.lru_cache(maxsize=None)
 def memoized_fibonacci(n: int) -> int:
+    """Calcula Fibonacci com cache para alta performance."""
     if n < 2:
         return n
     return memoized_fibonacci(n - 1) + memoized_fibonacci(n - 2)
 
 
-@functools.singledispatch
-def spell_dispatcher(arg: Any):
-    return "Unknown magical essence"
+def spell_dispatcher() -> Callable[[Any], str]:
+    @functools.singledispatch
+    def dispatcher(arg: Any) -> str:
+        return "Unknown spell type"
 
+    @dispatcher.register(int)
+    def _(arg: int) -> str:
+        return f"Damage spell: {arg} damage"
 
-@spell_dispatcher.register(int)
-def _(arg: int):
-    return f"Damage spell: {arg} HP"
+    @dispatcher.register(str)
+    def _(arg: str) -> str:
+        return f"Enchantment: {arg}"
 
+    @dispatcher.register(list)
+    def _(arg: list) -> str:
+        return f"Multi-cast: {len(arg)} spells"
 
-@spell_dispatcher.register(str)
-def _(arg: str):
-    return f"Enchantment: {arg}"
-
-
-@spell_dispatcher.register(list)
-def _(arg: list):
-    return f"Multi-cast: {len(arg)} spells"
+    return dispatcher
 
 
 if __name__ == "__main__":
     spell_powers = [48, 49, 34, 23, 47, 22]
-    operations = ['add', 'multiply', 'max', 'min']
-    fib_tests = [10, 17, 20]
+    fib_tests = [10, 15]
 
-    print("=== Testing Spell Reducer ===")
-    print(f"Sum (add): {spell_reducer(spell_powers, 'add')}")
-    print(f"Max value: {spell_reducer(spell_powers, 'max')}")
+    print("Testing spell reducer...")
+    print(f"Sum: {spell_reducer(spell_powers, 'add')}")
+    print(f"Product: {spell_reducer(spell_powers, 'multiply')}")
+    print(f"Max: {spell_reducer(spell_powers, 'max')}")
 
-    print("\n=== Testing Partial Enchanter ===")
-    enchanters = partial_enchanter(base_enchant)
-    print(enchanters["fire_enchant"]("Iron Shield"))
-    print(enchanters["lightning_enchant"]("Silver Sword"))
-
-    print("\n=== Testing Memoized Fibonacci ===")
-    for n in fib_tests:
+    print("\nTesting memoized fibonacci...")
+    for n in [0, 1] + fib_tests:
         print(f"Fib({n}): {memoized_fibonacci(n)}")
 
-    print("\n=== Testing Spell Dispatcher ===")
-    print(spell_dispatcher(100))
-    print(spell_dispatcher("Invisibility"))
-    print(spell_dispatcher([48, 49, 34]))
+    print("\nTesting spell dispatcher...")
+    dispatch = spell_dispatcher()
+    print(dispatch(42))
+    print(dispatch("fireball"))
+    print(dispatch([1, 2, 3]))
+    print(dispatch(3.14))

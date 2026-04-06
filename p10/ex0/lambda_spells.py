@@ -12,13 +12,11 @@ def spell_transformer(spells: list[str]) -> list[str]:
 
 
 def mage_stats(mages: list[dict]) -> dict:
-    powers = list(map(lambda m: m['power'], mages))
-    if not powers:
+    if not mages:
         return {'max_power': 0, 'min_power': 0, 'avg_power': 0.0}
-    max_p = max(powers)
-    min_p = min(powers)
-    avg_p = round(sum(powers) / len(powers), 2)
-
+    max_p = max(mages, key=lambda m: m['power'])['power']
+    min_p = min(mages, key=lambda m: m['power'])['power']
+    avg_p = round(sum(map(lambda m: m['power'], mages)) / len(mages), 2)
     return {
         'max_power': max_p,
         'min_power': min_p,
@@ -43,14 +41,19 @@ if __name__ == "__main__":
 
     spells = ['tsunami', 'blizzard', 'fireball', 'tornado']
 
-    print("=== Ordered Artifacts (power desc) ===")
-    print(artifact_sorter(artifacts))
+    print("Testing artifact sorter...")
+    sorted_arts = artifact_sorter(artifacts)
+    if len(sorted_arts) >= 2:
+        print(f"{sorted_arts[0]['name']} ({sorted_arts[0]['power']} power) "
+              f"comes before {sorted_arts[1]['name']}"
+              f"({sorted_arts[1]['power']} power)")
 
-    print("\n=== Mages With Power >= 80 ===")
-    print(power_filter(mages, 80))
+    print("\nTesting spell transformer...")
+    print(" ".join(spell_transformer(spells)))
 
-    print("\n=== Transformer Spells ===")
-    print(spell_transformer(spells))
+    print("\nTesting power filter (Min Power: 80)...")
+    filtered = power_filter(mages, 80)
+    print(f"Mages found: {filtered}")
 
-    print("\n===Mages Statistic ===")
+    print("\nTesting mage stats...")
     print(mage_stats(mages))
